@@ -1,0 +1,305 @@
+// Copyright (c) 2026 Echoxiawan
+// SPDX-License-Identifier: MIT
+// https://github.com/Echoxiawan/opencode-gateway
+
+:root {
+  --bg: #0f1115;
+  --bg2: #161a22;
+  --card: #1b2029;
+  --border: #2a3140;
+  --text: #e6e9ef;
+  --muted: #8b93a3;
+  --accent: #4f8cff;
+  --green: #34c98e;
+  --orange: #e8a13c;
+  --red: #e5534b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "SF Pro Text", "PingFang SC", "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.hidden { display: none !important; }
+
+/* ---- login ---- */
+#login-view {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.login-card h1 { font-size: 20px; text-align: center; }
+.login-card .sub { color: var(--muted); text-align: center; margin-bottom: 8px; }
+.login-card input {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+}
+.login-card input:focus { border-color: var(--accent); }
+.login-card button {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.err { color: var(--red); min-height: 18px; font-size: 13px; }
+
+/* ---- header ---- */
+header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+header h1 { font-size: 16px; }
+nav { display: flex; gap: 6px; flex: 1; }
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.tab-btn:hover { color: var(--text); background: var(--card); }
+.tab-btn.active { color: var(--text); background: var(--card); }
+.status-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.status-dot.ok { background: var(--green); }
+.status-dot.bad { background: var(--red); }
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+.refresh-note { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+/* Refresh failures are shown instead of swallowed: a console that keeps
+   showing stale numbers with no explanation is worse than an error. */
+.error-banner {
+  background: #3a1f22;
+  border-bottom: 1px solid #6b2b30;
+  color: #ffb4b4;
+  padding: 10px 28px;
+  font-size: 13px;
+}
+
+/* Session + request id stacked in one cell; the id is long, so it is clipped
+   with the full value available on hover. */
+.cell-stack .sub-id {
+  color: var(--muted);
+  font-size: 11px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+main { max-width: 1200px; margin: 0 auto; padding: 24px 28px 60px; }
+
+/* ---- summary ---- */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.stat-card .label { color: var(--muted); font-size: 12px; }
+.stat-card .value { font-size: 22px; font-weight: 600; margin-top: 4px; }
+.stat-card .sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+/* ---- chart ---- */
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.chart-card h2 { font-size: 14px; font-weight: 500; color: var(--muted); margin-bottom: 12px; }
+
+/* ---- models ---- */
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 14px;
+}
+.model-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.model-card .top { display: flex; justify-content: space-between; align-items: center; }
+.model-card .name { font-weight: 600; font-family: ui-monospace, monospace; font-size: 13px; }
+.badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.badge.free { background: rgba(52,201,142,.14); color: var(--green); }
+.badge.paid { background: rgba(79,140,255,.14); color: var(--accent); }
+.model-card .stats { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+.model-card .stat .k { color: var(--muted); font-size: 11px; }
+.model-card .stat .v { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.model-card .cost { color: var(--muted); font-size: 11px; margin-top: 8px; }
+
+/* ---- requests ---- */
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 10px 14px; text-align: left; white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); }
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:last-child { border-bottom: none; }
+td.ok { color: var(--green); }
+td.bad { color: var(--red); }
+.mono { font-family: ui-monospace, monospace; }
+
+/* ---- config ---- */
+.form-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.form-card h2 { font-size: 15px; margin-bottom: 6px; }
+.hint { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+.hint code {
+  background: var(--bg2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+textarea {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  outline: none;
+  resize: vertical;
+}
+textarea:focus { border-color: var(--accent); }
+.btn-row { display: flex; gap: 10px; margin-top: 12px; }
+button {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+}
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ---- connect ---- */
+.connect-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.ctab-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.ctab-btn.active { background: var(--bg2); color: var(--text); }
+.snippet {
+  background: #0b0d12;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  overflow-x: auto;
+  font-family: ui-monospace, monospace;
+  font-size: 12.5px;
+  color: #b8c4d8;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ---- inline inputs ---- */
+.inline-input { display: flex; gap: 8px; align-items: center; }
+.inline-input input {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 12px;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  outline: none;
+}
+.inline-input input:focus { border-color: var(--accent); }
+.inline-input button { white-space: nowrap; }
+.sticky-actions { align-items: center; margin-bottom: 18px; }
+
+/* ---- key line ---- */
+.key-line { justify-content: flex-start; margin-bottom: 12px; }
+button.small { padding: 5px 12px; font-size: 12px; }
+
+/* ---- filters / toolbar ---- */
+.logs-toolbar {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.auto-refresh { color: var(--muted); font-size: 13px; display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.auto-refresh input { accent-color: var(--accent); }
+.auto-refresh select {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 5px 8px;
+  font-size: 13px;
+  outline: none;
+}
+.auto-refresh select:focus { border-color: var(--accent); }

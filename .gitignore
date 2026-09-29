@@ -1,0 +1,18 @@
+# 本地配置（含密钥）与用量数据
+config.json
+data/
+logs/
+*.db
+*.db-shm
+*.db-wal
+
+# 构建产物
+opencode-gateway
+opencode-gateway.exe
+
+# 工具/IDE
+.idea/
+.playwright-mcp/
+
+# 本地规划文档
+PLAN.md

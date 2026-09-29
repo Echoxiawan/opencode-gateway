@@ -1,0 +1,149 @@
+<!-- Copyright (c) 2026 Echoxiawan
+     SPDX-License-Identifier: MIT
+     https://github.com/Echoxiawan/opencode-gateway -->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>opencode-gateway 控制台</title>
+<link rel="stylesheet" href="/api/admin.css">
+</head>
+<body>
+<div id="login-view" class="hidden">
+  <div class="login-card">
+    <h1>opencode-gateway</h1>
+    <p class="sub">OpenCode Zen → OpenAI / Claude / Codex 网关</p>
+    <input id="login-pass" type="password" placeholder="管理员密码" autocomplete="current-password">
+    <button id="login-btn">登录</button>
+    <div id="login-err" class="err"></div>
+  </div>
+</div>
+
+<div id="main-view" class="hidden">
+  <header>
+    <h1>opencode-gateway</h1>
+    <nav>
+      <button class="tab-btn active" data-tab="models">模型与用量</button>
+      <button class="tab-btn" data-tab="requests">请求明细</button>
+      <button class="tab-btn" data-tab="config">配置</button>
+      <button class="tab-btn" data-tab="connect">接入说明</button>
+    </nav>
+    <div class="header-right">
+      <span class="refresh-note" id="refresh-note">尚未刷新</span>
+      <button id="refresh-btn" class="small">刷新</button>
+      <span class="status-dot" id="status-dot" title="上游状态"></span>
+    </div>
+  </header>
+  <div id="error-banner" class="error-banner hidden"></div>
+
+  <main>
+    <section id="tab-models" class="tab-panel">
+      <div class="summary-row" id="summary-row"></div>
+      <div class="chart-card">
+        <h2>近 30 天 token 用量</h2>
+        <canvas id="usage-chart" height="180"></canvas>
+      </div>
+      <div class="model-grid" id="model-grid"></div>
+    </section>
+
+    <section id="tab-requests" class="tab-panel hidden">
+      <div class="logs-toolbar">
+        <label class="auto-refresh">模型：
+          <select id="req-model-filter"><option value="">全部模型</option></select>
+        </label>
+        <label class="auto-refresh">协议：
+          <select id="req-proto-filter">
+            <option value="">全部</option>
+            <option value="chat">OpenAI Chat</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="responses">Responses</option>
+          </select>
+        </label>
+        <label class="auto-refresh">时间：
+          <select id="req-time-filter">
+            <option value="all">全部</option>
+            <option value="today">今天</option>
+            <option value="7d">近 7 天</option>
+            <option value="30d">近 30 天</option>
+          </select>
+        </label>
+        <button id="req-refresh-btn">刷新</button>
+        <span id="req-summary" class="hint" style="margin:0"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="req-table">
+          <thead><tr>
+            <th>时间</th><th>模型</th><th>会话 / 请求 ID</th><th>协议</th><th>通道</th><th>状态</th>
+            <th>输入</th><th>输出</th><th>推理</th><th>缓存</th><th>耗时</th><th>费用</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-config" class="tab-panel hidden">
+      <div class="form-card">
+        <h2>网关 API Key</h2>
+        <p class="hint">外部工具连接本网关时使用的密钥（<code>Authorization: Bearer &lt;key&gt;</code>）。留空则仅允许本机访问。修改后需同步更新客户端配置。</p>
+        <div class="inline-input">
+          <input id="cfg-apikey" type="text" placeholder="sk-gw-...">
+          <button id="copy-apikey-btn">复制</button>
+          <button id="gen-apikey-btn">随机生成</button>
+          <button id="clear-apikey-btn">清空</button>
+        </div>
+      </div>
+      <div class="form-card">
+        <h2>Zen API Key（付费模型）</h2>
+        <p class="hint">OpenCode Zen 官方密钥，填入后付费模型自动开放。留空只使用免费模型。</p>
+        <textarea id="cfg-keys" rows="3" placeholder="sk-... 每行一个"></textarea>
+        <div class="btn-row">
+          <button id="verify-key-btn">验证第一个 Key</button>
+        </div>
+      </div>
+      <div class="form-card">
+        <h2>模型黑名单</h2>
+        <p class="hint">每行一个模型 ID，列入后不再对外暴露。</p>
+        <textarea id="cfg-blacklist" rows="3" placeholder="model-id"></textarea>
+      </div>
+      <div class="form-card">
+        <h2>控制台密码</h2>
+        <p class="hint">修改后立即生效，下次登录使用新密码。留空表示不修改。</p>
+        <div class="inline-input">
+          <input id="cfg-adminpass" type="password" placeholder="留空则不修改">
+        </div>
+      </div>
+      <div class="btn-row sticky-actions">
+        <button id="save-cfg-btn" class="primary">保存全部配置</button>
+        <span id="save-result" class="hint"></span>
+      </div>
+      <div class="form-card">
+        <h2>服务信息</h2>
+        <div id="server-info" class="hint"></div>
+      </div>
+      <div id="verify-result" class="hint"></div>
+    </section>
+
+    <section id="tab-connect" class="tab-panel hidden">
+      <div class="form-card">
+        <h2>接入方式</h2>
+        <div class="inline-input key-line">
+          <span class="hint" style="margin:0">网关 API Key：<code id="gw-key-display">（未设置，仅本机可访问）</code></span>
+          <button id="copy-gwkey-btn" class="small">复制 Key</button>
+        </div>
+        <div class="connect-tabs">
+          <button class="ctab-btn active" data-ctab="claude">Claude Code</button>
+          <button class="ctab-btn" data-ctab="codex">Codex CLI</button>
+          <button class="ctab-btn" data-ctab="openai">OpenAI SDK</button>
+        </div>
+        <pre id="connect-snippet" class="snippet"></pre>
+        <button id="copy-btn">复制</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/api/admin.js"></script>
+</body>
+</html>
