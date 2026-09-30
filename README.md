@@ -63,6 +63,7 @@ curl -s http://127.0.0.1:8787/v1/models
 | 📝 **File logging** | Daily JSONL under `./logs/`, 7-day retention |
 | 🖥️ **Web console** | Model cards, 30-day chart, filterable request log, config editor |
 | 🔑 **Key management** | Generate, copy and rotate the gateway key from the console |
+| 📌 **Tray icon (Windows)** | Minimizes to the notification area, shows today's requests at a glance |
 | 🪶 **Single binary** | Pure Go, no CGO, no Node.js, no database server |
 
 ---
@@ -89,6 +90,28 @@ On first run the gateway creates `config.json` in the working directory and prin
 Open `http://127.0.0.1:8787/admin` and log in with that password — the console can change the password, the gateway API key and the Zen key, writing changes back to `config.json` immediately.
 
 Prefer a different setup? Edit `config.json` by hand, point `-config /path/to/config.json` at another file, or set `OPENCODE_GATEWAY_NO_INIT=1` to skip generation entirely.
+
+### Windows tray icon
+
+On Windows the gateway puts an icon in the notification area (the taskbar's bottom-right corner). Clicking the window's minimize button hides the window there: it vanishes from the taskbar and only the icon stays behind, so the gateway keeps serving without holding a screen slot.
+
+Right-click the icon for its menu:
+
+| Item | What it does |
+|------|--------------|
+| 打开控制台… | Opens `http://127.0.0.1:8787/admin` (a single left-click does this too) |
+| *(grey line)* | Today's request count and upstream state — read-only |
+| 显示 / 隐藏控制台窗口 | Toggles the console window back into view |
+| 退出 | Graceful shutdown |
+
+The dot's colour is the upstream health LED: grey while the model catalog is still loading, green once upstream answers, red when the last refresh failed.
+
+| Flag | Effect |
+|------|--------|
+| `-hide-window` | Start with the console window already hidden — tray icon only |
+| `-no-tray` | Never install the icon; behave like a plain console app |
+
+Linux and macOS builds compile a stub, so neither the flags nor anything else about them changes.
 
 **Requirements:** Go 1.24+ to build. No CGO — the SQLite driver is pure Go.
 
@@ -252,6 +275,7 @@ The console's **Requests** tab shows the same, with `rejected` in the channel co
 | Claude Code exits with `unrecognized model` | Free model names aren't in its catalog; map with `modelOverrides` |
 | Codex warns `Model metadata ... not found` | Cosmetic — affects context estimation only |
 | Model cards say "loading model catalog" | Just started; the catalog fills in a few seconds |
+| Double-clicking the exe flashes a window and nothing happens | Something already owns the port — usually an older `opencode-gateway` still running (check the tray icon). Stop it, or start on another port: `-listen 127.0.0.1:8788` |
 
 ---
 
