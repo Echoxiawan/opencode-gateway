@@ -63,6 +63,7 @@ curl -s http://127.0.0.1:8787/v1/models
 | 📝 **Log em arquivo** | JSONL diário em `./logs/`, com retenção de 7 dias |
 | 🖥️ **Console web** | Cards de modelos, gráfico de 30 dias, log de requisições filtrável e editor de configuração |
 | 🔑 **Gerenciamento de chaves** | Gere, copie e rotacione a key do gateway pelo console |
+| 📌 **Ícone da bandeja (Windows)** | Minimiza para a área de notificação e mostra de relance as requisições de hoje |
 | 🪶 **Binário único** | Go puro, sem CGO, sem Node.js, sem servidor de banco de dados |
 
 ---
@@ -89,6 +90,28 @@ Na primeira execução, o gateway cria o `config.json` no diretório de trabalho
 Abra `http://127.0.0.1:8787/admin` e faça login com essa senha — o console consegue alterar a senha, a API key do gateway e a Zen key, gravando as mudanças de volta no `config.json` na hora.
 
 Prefere outra configuração? Edite o `config.json` à mão, aponte `-config /path/to/config.json` para outro arquivo, ou defina `OPENCODE_GATEWAY_NO_INIT=1` para pular completamente a geração.
+
+### Ícone da bandeja do Windows
+
+No Windows, o gateway coloca um ícone na área de notificação, no canto inferior direito da barra de tarefas. Ao clicar no botão de minimizar, a janela desaparece da barra de tarefas e apenas o ícone permanece, enquanto o gateway continua funcionando.
+
+Clique com o botão direito no ícone para abrir o menu:
+
+| Item | Função |
+|------|------|
+| Abrir console… | Abre `http://127.0.0.1:8787/admin` (um clique esquerdo também faz isso) |
+| *(linha esmaecida)* | Contagem de requisições de hoje e estado do upstream — somente leitura |
+| Mostrar / ocultar janela do console | Mostra ou oculta novamente a janela do console |
+| Sair | Encerra o gateway normalmente |
+
+A cor do ponto do ícone indica o estado do upstream: cinza enquanto o catálogo de modelos está carregando, verde quando o upstream responde e vermelho quando a última atualização falhou.
+
+| Opção | Efeito |
+|------|--------|
+| `-hide-window` | Inicia com a janela do console oculta; apenas o ícone da bandeja fica visível |
+| `-no-tray` | Não instala o ícone e funciona como um aplicativo de console comum |
+
+As compilações para Linux e macOS usam um stub vazio, portanto essas opções não têm efeito nessas plataformas.
 
 **Requisitos:** Go 1.24+ para compilar. Sem CGO — o driver do SQLite é Go puro.
 

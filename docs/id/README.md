@@ -63,6 +63,7 @@ curl -s http://127.0.0.1:8787/v1/models
 | 📝 **Log berkas** | JSONL harian di `./logs/`, disimpan 7 hari |
 | 🖥️ **Konsol web** | Kartu model, grafik 30 hari, log permintaan yang bisa difilter, editor konfigurasi |
 | 🔑 **Manajemen kunci** | Buat, salin, dan rotasi gateway key dari konsol |
+| 📌 **Ikon baki (Windows)** | Meminimalkan ke area notifikasi dan menampilkan jumlah permintaan hari ini secara sekilas |
 | 🪶 **Satu binary** | Go murni, tanpa CGO, tanpa Node.js, tanpa server basis data |
 
 ---
@@ -89,6 +90,28 @@ Pada eksekusi pertama, gateway membuat `config.json` di direktori kerja dan menc
 Buka `http://127.0.0.1:8787/admin` dan masuk dengan kata sandi tersebut — konsol bisa mengubah kata sandi, gateway API key, dan Zen key, lalu langsung menyimpan perubahannya kembali ke `config.json`.
 
 Ingin cara lain? Sunting `config.json` secara manual, arahkan `-config /path/to/config.json` ke berkas lain, atau setel `OPENCODE_GATEWAY_NO_INIT=1` untuk melewati proses pembuatan berkas sama sekali.
+
+### Ikon baki Windows
+
+Di Windows, gateway menempatkan ikon di area notifikasi, di sudut kanan bawah bilah tugas. Saat tombol minimalkan jendela diklik, jendela menghilang dari bilah tugas dan hanya ikonnya yang tersisa, sementara gateway tetap berjalan.
+
+Klik kanan ikon untuk membuka menu:
+
+| Item | Fungsi |
+|------|------|
+| Buka konsol… | Membuka `http://127.0.0.1:8787/admin` (klik kiri sekali juga melakukan hal yang sama) |
+| *(baris abu-abu)* | Jumlah permintaan hari ini dan status upstream — hanya-baca |
+| Tampilkan / sembunyikan jendela konsol | Menampilkan kembali atau menyembunyikan jendela konsol |
+| Keluar | Mematikan gateway dengan baik |
+
+Warna titik pada ikon menunjukkan status upstream: abu-abu saat katalog model masih dimuat, hijau saat upstream merespons, dan merah jika penyegaran terakhir gagal.
+
+| Opsi | Efek |
+|------|------|
+| `-hide-window` | Memulai dengan jendela konsol tersembunyi; hanya ikon baki yang terlihat |
+| `-no-tray` | Tidak memasang ikon; berjalan sebagai aplikasi konsol biasa |
+
+Build Linux dan macOS menggunakan stub kosong, sehingga opsi ini tidak berpengaruh di platform tersebut.
 
 **Persyaratan:** Go 1.24+ untuk build. Tanpa CGO — driver SQLite-nya Go murni.
 

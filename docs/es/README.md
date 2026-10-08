@@ -63,6 +63,7 @@ curl -s http://127.0.0.1:8787/v1/models
 | 📝 **Logs en archivo** | JSONL diario en `./logs/`, con 7 días de retención |
 | 🖥️ **Consola web** | Tarjetas de modelos, gráfico de 30 días, registro de peticiones filtrable, editor de configuración |
 | 🔑 **Gestión de claves** | Genera, copia y rota la clave del gateway desde la consola |
+| 📌 **Icono de bandeja (Windows)** | Se minimiza al área de notificación y muestra de un vistazo las peticiones de hoy |
 | 🪶 **Binario único** | Go puro, sin CGO, sin Node.js, sin servidor de base de datos |
 
 ---
@@ -89,6 +90,28 @@ En el primer arranque el gateway crea `config.json` en el directorio de trabajo 
 Abre `http://127.0.0.1:8787/admin` e inicia sesión con esa contraseña — la consola puede cambiar la contraseña, la clave API del gateway y la Zen Key, y los cambios se escriben de inmediato en `config.json`.
 
 ¿Prefieres otra forma de montarlo? Edita `config.json` a mano, apunta `-config /path/to/config.json` a otro archivo, o define `OPENCODE_GATEWAY_NO_INIT=1` para omitir por completo la generación.
+
+### Icono de bandeja de Windows
+
+En Windows, el gateway coloca un icono en el área de notificación, en la esquina inferior derecha de la barra de tareas. Al hacer clic en el botón de minimizar, la ventana desaparece de la barra de tareas y queda representada por el icono, mientras el gateway sigue funcionando.
+
+Haz clic derecho en el icono para abrir el menú:
+
+| Elemento | Función |
+|------|------|
+| Abrir consola… | Abre `http://127.0.0.1:8787/admin` (un clic izquierdo también lo hace) |
+| *(línea atenuada)* | Número de peticiones de hoy y estado del upstream — solo lectura |
+| Mostrar / ocultar ventana de la consola | Vuelve a mostrar u oculta la ventana de la consola |
+| Salir | Apaga el gateway correctamente |
+
+El color del punto del icono indica el estado del upstream: gris mientras se carga el catálogo de modelos, verde cuando el upstream responde y rojo si la última actualización falló.
+
+| Opción | Efecto |
+|------|--------|
+| `-hide-window` | Inicia con la ventana de la consola oculta; solo queda el icono de bandeja |
+| `-no-tray` | No instala el icono y funciona como una aplicación de consola normal |
+
+Las compilaciones para Linux y macOS usan un stub vacío, por lo que estas opciones no tienen efecto en esas plataformas.
 
 **Requisitos:** Go 1.24+ para compilar. Sin CGO — el driver de SQLite es Go puro.
 
